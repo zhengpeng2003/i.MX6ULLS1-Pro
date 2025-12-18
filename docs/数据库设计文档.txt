@@ -1,0 +1,98 @@
+1. 概述
+   - 数据库：SQLite，本地嵌入式存储。
+   - 设计原则：满足实时数据、告警、配置、缓存补传需求；字段冗余适度以便快速查询。
+
+2. 表结构
+   2.1 device
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - name TEXT
+       - address INTEGER            # Modbus 从站地址
+       - group_id INTEGER           # 分组引用，可为 NULL
+       - baud_rate INTEGER
+       - data_bits INTEGER
+       - parity TEXT                # N/E/O
+       - stop_bits INTEGER
+       - register_map TEXT          # JSON，寄存器定义模板
+       - status TEXT                # online/offline/error
+       - created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+       - updated_at DATETIME
+       - FOREIGN KEY(group_id) REFERENCES device_group(id)
+   2.2 device_group
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - name TEXT
+       - description TEXT
+       - created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+   2.3 realtime_data
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - device_id INTEGER
+       - key TEXT                   # 数据点名称
+       - value REAL
+       - quality TEXT               # good/bad/uncertain
+       - timestamp DATETIME         # 数据时间戳
+       - FOREIGN KEY(device_id) REFERENCES device(id)
+       - 索引：idx_realtime_device_time(device_id, timestamp DESC)
+   2.4 alarm
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - device_id INTEGER
+       - key TEXT
+       - level TEXT                 # info/warn/critical
+       - type TEXT                  # threshold/comm/ai
+       - status TEXT                # active/confirmed/silenced/resolved
+       - message TEXT
+       - triggered_at DATETIME
+       - resolved_at DATETIME
+       - confirmed_at DATETIME
+       - silenced_until DATETIME
+       - FOREIGN KEY(device_id) REFERENCES device(id)
+       - 索引：idx_alarm_status(status), idx_alarm_device_time(device_id, triggered_at DESC)
+   2.5 config
+       - key TEXT PRIMARY KEY
+       - value TEXT                 # JSON 或标量
+       - updated_at DATETIME
+   2.6 command_queue
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - command_type TEXT          # write_config/control
+       - device_id INTEGER
+       - payload TEXT               # JSON
+       - status TEXT                # pending/sent/acked/failed
+       - created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+       - updated_at DATETIME
+       - FOREIGN KEY(device_id) REFERENCES device(id)
+   2.7 mqtt_cache
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - topic TEXT
+       - payload TEXT
+       - qos INTEGER
+       - retained INTEGER           # 0/1
+       - created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+       - status TEXT                # pending/sent/failed
+       - last_error TEXT
+       - 索引：idx_mqtt_cache_status(status, created_at)
+   2.8 ai_result（可选）
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - source TEXT                # 图像/通道标识
+       - result TEXT                # JSON
+       - confidence REAL
+       - created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+       - related_device_id INTEGER
+       - FOREIGN KEY(related_device_id) REFERENCES device(id)
+   2.9 log_index（可选）
+       - id INTEGER PRIMARY KEY AUTOINCREMENT
+       - category TEXT              # run/comm/alarm
+       - level TEXT                 # debug/info/warn/error
+       - message TEXT
+       - created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+
+3. 视图与查询建议
+   - 最近实时数据视图：按 device_id、key 选取最新一条，供 UI 实时展示。
+   - 告警统计：按级别与状态聚合计数，支持仪表盘。
+   - 补传队列：按 created_at 升序查询 mqtt_cache status=pending。
+
+4. 数据一致性与维护
+   - 采集写入与补传采用事务，保证同批次一致。
+   - 定期清理策略：历史实时数据保留时间可配置（如 90 天）；告警历史归档。
+   - 索引维护：定期 ANALYZE，必要时 VACUUM 以压缩文件。
+
+5. 迁移与版本
+   - 版本号存储在 config 表（key=db_version），升级时按版本执行迁移脚本。
+   - 新增字段使用 ALTER TABLE + 默认值迁移，保持向后兼容。
