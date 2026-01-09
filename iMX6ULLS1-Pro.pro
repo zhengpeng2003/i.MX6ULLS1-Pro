@@ -1,24 +1,88 @@
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+QT += core gui network widgets
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+# 目标文件名
+TARGET = iMX6ULLS1-Pro
 
-SOURCES += \
-    main.cpp \
-    mainwindow.cpp
+# 主窗口文件
+SOURCES += main.cpp \
+           alarm/alarmcenterpage.cpp \
+           alarm/alarmrulepage.cpp \
+           help/helppage.cpp \
+           mainwindow.cpp \
+           settings/logpage.cpp \
+           settings/mqttconfigpage.cpp \
+           settings/networkpage.cpp \
+           settings/settingspage.cpp
 
-HEADERS += \
-    mainwindow.h
+HEADERS += mainwindow.h \
+    alarm/alarmcenterpage.h \
+    alarm/alarmrulepage.h \
+    help/helppage.h \
+    settings/logpage.h \
+    settings/mqttconfigpage.h \
+    settings/networkpage.h \
+    settings/settingspage.h
+FORMS += mainwindow.ui
 
-FORMS += \
-    mainwindow.ui
+# Common目录
+SOURCES += common/appstyle.cpp \
+           common/confirmdialog.cpp \
+           common/toast.cpp
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+HEADERS += common/appstyle.h \
+           common/confirmdialog.h \
+           common/result.h \
+           common/toast.h
+
+# Device目录
+SOURCES += device/deviceconfigpage.cpp \
+           device/devicelistpage.cpp
+
+HEADERS += device/deviceconfigpage.h \
+           device/devicelistpage.h
+
+# Home目录
+SOURCES += home/homepage.cpp
+HEADERS += home/homepage.h
+
+# Monitor目录
+SOURCES += monitor/datadetailpage.cpp \
+           monitor/monitorpage.cpp
+
+HEADERS += monitor/datadetailpage.h \
+           monitor/monitorpage.h
+
+# Service目录
+SOURCES += service/alarmservice.cpp \
+           service/deviceservice.cpp \
+           service/modbusservice.cpp \
+           service/mqttservice.cpp \
+           service/networkservice.cpp \
+           service/systemservice.cpp
+
+HEADERS += service/alarmservice.h \
+           service/deviceservice.h \
+           service/modbusservice.h \
+           service/mqttservice.h \
+           service/networkservice.h \
+           service/systemservice.h
+
+# 包含路径
+INCLUDEPATH += . \
+               common \
+               device \
+               home \
+               monitor \
+               service
+
+# 去掉有问题的DESTDIR设置，让qmake自动处理
+# 或者只设置中间文件目录
+OBJECTS_DIR = build/.obj
+MOC_DIR = build/.moc
+RCC_DIR = build/.rcc
+UI_DIR = build/.ui
+
+# 部署配置（可选）
+# target.path = /opt/$${TARGET}/bin
+# INSTALLS += target
