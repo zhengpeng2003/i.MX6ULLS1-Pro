@@ -1,6 +1,13 @@
+/**
+ * @file appstyle.cpp
+ * @brief 应用全局样式实现
+ *
+ * 本文件实现了全局样式的具体定义和各类样式表的生成方法。
+ */
+
 #include "appstyle.h"
 
-// Color definitions
+// 颜色定义
 const QColor AppStyle::BG_PRIMARY     = QColor("#1a1a2e");
 const QColor AppStyle::BG_CARD        = QColor("#16213e");
 const QColor AppStyle::BG_BORDER      = QColor("#0f3460");

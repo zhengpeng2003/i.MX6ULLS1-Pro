@@ -1,3 +1,10 @@
+/**
+ * @file toast.cpp
+ * @brief 轻提示组件实现
+ *
+ * 本文件实现了Toast轻提示组件的所有功能，包括显示、动画、自动消失等。
+ */
+
 #include "toast.h"
 #include <QPainter>
 #include <QApplication>

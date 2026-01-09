@@ -1,3 +1,11 @@
+/**
+ * @file mqttservice.cpp
+ * @brief MQTT服务实现
+ *
+ * 本文件实现了MQTT云连接服务的所有功能，包括配置管理、连接控制、
+ * 消息发布等。当前为模拟实现，实际部署时需替换为真实MQTT库调用。
+ */
+
 #include "mqttservice.h"
 
 static MqttConfig s_mqttConfig;
@@ -25,8 +33,8 @@ Result MqttService::saveMqttConfig(const MqttConfig &cfg)
 
 Result MqttService::connectMqtt()
 {
-    // TODO: Implement actual MQTT connection
-    // This would use Qt MQTT module or similar library
+    // TODO: 实现实际的MQTT连接
+    // 这需要使用Qt MQTT模块或类似的库
     s_mqttConnected = true;
     return Result::success();
 }
@@ -53,9 +61,9 @@ Result MqttService::publish(const QString &topic, const QByteArray &payload)
     Q_UNUSED(payload)
 
     if (!s_mqttConnected) {
-        return Result::error(1, "MQTT not connected");
+        return Result::error(1, "MQTT未连接");
     }
 
-    // TODO: Implement actual publish
+    // TODO: 实现实际的消息发布
     return Result::success();
 }

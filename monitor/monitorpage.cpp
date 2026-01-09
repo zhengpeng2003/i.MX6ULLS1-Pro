@@ -1,3 +1,11 @@
+/**
+ * @file monitorpage.cpp
+ * @brief 实时监控页面实现
+ *
+ * 本文件实现了实时监控页面的所有功能，包括设备选择、
+ * 轮询控制、数据显示等。
+ */
+
 #include "monitorpage.h"
 #include "../common/appstyle.h"
 #include "../common/toast.h"
@@ -78,7 +86,7 @@ void MonitorPage::setupTitleBar()
     connect(m_backBtn, &QPushButton::clicked, this, &MonitorPage::goBack);
     layout->addWidget(m_backBtn);
 
-    m_titleLabel = new QLabel("Real-time Monitor", m_titleBar);
+    m_titleLabel = new QLabel("实时监控", m_titleBar);
     m_titleLabel->setStyleSheet("color: #ffffff; font-size: 16pt; font-weight: bold;");
     layout->addWidget(m_titleLabel);
 
@@ -92,7 +100,7 @@ void MonitorPage::setupControls()
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(10);
 
-    // Device selector
+    // 设备选择器
     m_deviceCombo = new QComboBox(controlWidget);
     m_deviceCombo->setStyleSheet(AppStyle::getInputStyle());
     m_deviceCombo->setMinimumWidth(180);
@@ -102,7 +110,7 @@ void MonitorPage::setupControls()
 
     layout->addStretch();
 
-    // Status LED
+    // 状态指示灯
     m_statusLed = new QLabel(controlWidget);
     m_statusLed->setFixedSize(16, 16);
     m_statusLed->setStyleSheet(
@@ -110,13 +118,13 @@ void MonitorPage::setupControls()
     );
     layout->addWidget(m_statusLed);
 
-    // Status label
-    m_statusLabel = new QLabel("Stopped", controlWidget);
+    // 状态标签
+    m_statusLabel = new QLabel("已停止", controlWidget);
     m_statusLabel->setStyleSheet("color: #a0a0a0; font-size: 11pt;");
     layout->addWidget(m_statusLabel);
 
-    // Start/Stop button
-    m_startStopBtn = new QPushButton("Start", controlWidget);
+    // 启动/停止按钮
+    m_startStopBtn = new QPushButton("启动", controlWidget);
     m_startStopBtn->setStyleSheet(AppStyle::getButtonStyle(true));
     m_startStopBtn->setMinimumWidth(80);
     m_startStopBtn->setMinimumHeight(40);
@@ -128,7 +136,7 @@ void MonitorPage::setupTable()
 {
     m_table = new QTableWidget(this);
     m_table->setColumnCount(4);
-    m_table->setHorizontalHeaderLabels(QStringList() << "Addr" << "Name" << "Value" << "Time");
+    m_table->setHorizontalHeaderLabels(QStringList() << "地址" << "名称" << "值" << "时间");
     m_table->setStyleSheet(AppStyle::getTableStyle());
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -136,7 +144,7 @@ void MonitorPage::setupTable()
     m_table->verticalHeader()->setVisible(false);
     m_table->setShowGrid(false);
 
-    // Column widths
+    // 列宽
     m_table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     m_table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     m_table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
@@ -154,7 +162,7 @@ void MonitorPage::setupTable()
 void MonitorPage::loadDevices()
 {
     m_deviceCombo->clear();
-    m_deviceCombo->addItem("-- Select Device --", -1);
+    m_deviceCombo->addItem("-- 请选择设备 --", -1);
 
     Result result = DeviceService::getDeviceList();
     if (result.isSuccess()) {
@@ -199,22 +207,22 @@ void MonitorPage::setPollingState(bool polling)
     if (polling) {
         ModbusService::startPolling(m_currentDeviceId);
         m_pollTimer->start(1000);
-        m_startStopBtn->setText("Stop");
+        m_startStopBtn->setText("停止");
         m_startStopBtn->setStyleSheet(
             "QPushButton { background-color: #ff4444; color: #ffffff; border: none; "
             "border-radius: 6px; padding: 10px 20px; min-height: 40px; font-size: 14pt; font-weight: bold; }"
             "QPushButton:pressed { background-color: #cc3333; }"
         );
         m_statusLed->setStyleSheet("background-color: #00ff88; border-radius: 8px;");
-        m_statusLabel->setText("Polling");
+        m_statusLabel->setText("采集中");
         m_statusLabel->setStyleSheet("color: #00ff88; font-size: 11pt;");
     } else {
         ModbusService::stopPolling(m_currentDeviceId);
         m_pollTimer->stop();
-        m_startStopBtn->setText("Start");
+        m_startStopBtn->setText("启动");
         m_startStopBtn->setStyleSheet(AppStyle::getButtonStyle(true));
         m_statusLed->setStyleSheet("background-color: #606060; border-radius: 8px;");
-        m_statusLabel->setText("Stopped");
+        m_statusLabel->setText("已停止");
         m_statusLabel->setStyleSheet("color: #a0a0a0; font-size: 11pt;");
     }
 }
@@ -231,13 +239,13 @@ void MonitorPage::updateData()
     Result result = ModbusService::readHoldingRegisters(m_currentDeviceId);
     if (!result.isSuccess()) {
         m_statusLed->setStyleSheet("background-color: #ff4444; border-radius: 8px;");
-        m_statusLabel->setText("Error");
+        m_statusLabel->setText("错误");
         m_statusLabel->setStyleSheet("color: #ff4444; font-size: 11pt;");
         return;
     }
 
     m_statusLed->setStyleSheet("background-color: #00ff88; border-radius: 8px;");
-    m_statusLabel->setText("OK");
+    m_statusLabel->setText("正常");
     m_statusLabel->setStyleSheet("color: #00ff88; font-size: 11pt;");
 
     QVariantList registers = result.data.toList();

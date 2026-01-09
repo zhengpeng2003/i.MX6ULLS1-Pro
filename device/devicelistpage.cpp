@@ -1,3 +1,11 @@
+/**
+ * @file devicelistpage.cpp
+ * @brief 设备列表页面实现
+ *
+ * 本文件实现了设备列表页面的所有功能，包括表格显示、
+ * 设备增删改查、扫描设备等操作。
+ */
+
 #include "devicelistpage.h"
 #include "../common/appstyle.h"
 #include "../common/toast.h"
@@ -81,7 +89,7 @@ void DeviceListPage::setupTitleBar()
     connect(m_backBtn, &QPushButton::clicked, this, &DeviceListPage::goBack);
     layout->addWidget(m_backBtn);
 
-    m_titleLabel = new QLabel("Device Management", m_titleBar);
+    m_titleLabel = new QLabel("设备管理", m_titleBar);
     m_titleLabel->setStyleSheet("color: #ffffff; font-size: 16pt; font-weight: bold;");
     layout->addWidget(m_titleLabel);
 
@@ -92,7 +100,7 @@ void DeviceListPage::setupTable()
 {
     m_table = new QTableWidget(this);
     m_table->setColumnCount(4);
-    m_table->setHorizontalHeaderLabels(QStringList() << "Addr" << "Name" << "Type" << "Status");
+    m_table->setHorizontalHeaderLabels(QStringList() << "地址" << "名称" << "类型" << "状态");
     m_table->setStyleSheet(AppStyle::getTableStyle());
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -100,7 +108,7 @@ void DeviceListPage::setupTable()
     m_table->verticalHeader()->setVisible(false);
     m_table->setShowGrid(false);
 
-    // Set column widths
+    // 设置列宽
     m_table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     m_table->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     m_table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
@@ -109,7 +117,7 @@ void DeviceListPage::setupTable()
     m_table->setColumnWidth(2, 80);
     m_table->setColumnWidth(3, 70);
 
-    // Row height for touch
+    // 行高适配触控
     m_table->verticalHeader()->setDefaultSectionSize(36);
 
     connect(m_table, &QTableWidget::itemSelectionChanged,
@@ -135,27 +143,27 @@ void DeviceListPage::setupButtons()
     QString btnStyle = AppStyle::getButtonStyle(false);
     QString primaryStyle = AppStyle::getButtonStyle(true);
 
-    m_addBtn = new QPushButton("Add", m_buttonBar);
+    m_addBtn = new QPushButton("添加", m_buttonBar);
     m_addBtn->setStyleSheet(primaryStyle);
     m_addBtn->setMinimumHeight(44);
     connect(m_addBtn, &QPushButton::clicked, this, &DeviceListPage::onAddClicked);
     layout->addWidget(m_addBtn);
 
-    m_editBtn = new QPushButton("Edit", m_buttonBar);
+    m_editBtn = new QPushButton("编辑", m_buttonBar);
     m_editBtn->setStyleSheet(btnStyle);
     m_editBtn->setMinimumHeight(44);
     m_editBtn->setEnabled(false);
     connect(m_editBtn, &QPushButton::clicked, this, &DeviceListPage::onEditClicked);
     layout->addWidget(m_editBtn);
 
-    m_deleteBtn = new QPushButton("Delete", m_buttonBar);
+    m_deleteBtn = new QPushButton("删除", m_buttonBar);
     m_deleteBtn->setStyleSheet(btnStyle);
     m_deleteBtn->setMinimumHeight(44);
     m_deleteBtn->setEnabled(false);
     connect(m_deleteBtn, &QPushButton::clicked, this, &DeviceListPage::onDeleteClicked);
     layout->addWidget(m_deleteBtn);
 
-    m_scanBtn = new QPushButton("Scan", m_buttonBar);
+    m_scanBtn = new QPushButton("扫描", m_buttonBar);
     m_scanBtn->setStyleSheet(btnStyle);
     m_scanBtn->setMinimumHeight(44);
     connect(m_scanBtn, &QPushButton::clicked, this, &DeviceListPage::onScanClicked);
@@ -240,10 +248,10 @@ void DeviceListPage::onDeleteClicked()
     int deviceId = getSelectedDeviceId();
     if (deviceId < 0) return;
 
-    if (ConfirmDialog::confirm(this, "Confirm Delete", "Delete this device?")) {
+    if (ConfirmDialog::confirm(this, "确认删除", "确定要删除此设备吗？")) {
         Result result = DeviceService::removeDevice(deviceId);
         if (result.isSuccess()) {
-            Toast::showSuccess(this, "Device deleted");
+            Toast::showSuccess(this, "设备已删除");
             loadDevices();
         } else {
             Toast::showError(this, result.message);
@@ -257,7 +265,7 @@ void DeviceListPage::onScanClicked()
     m_scanProgress->setVisible(true);
     m_scanProgress->setValue(0);
 
-    // Simulate scanning progress
+    // 模拟扫描进度
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
         int value = m_scanProgress->value() + 10;
@@ -272,7 +280,7 @@ void DeviceListPage::onScanClicked()
             Result result = DeviceService::scanModbusDevices();
             if (result.isSuccess()) {
                 QVariantList found = result.data.toList();
-                Toast::showSuccess(this, QString("Found %1 devices").arg(found.size()));
+                Toast::showSuccess(this, QString("发现 %1 个设备").arg(found.size()));
             }
         }
     });

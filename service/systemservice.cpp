@@ -1,14 +1,22 @@
+/**
+ * @file systemservice.cpp
+ * @brief 系统服务实现
+ *
+ * 本文件实现了系统级别服务的所有功能，包括获取系统信息、通信状态、
+ * 串口配置、日志管理等。当前为模拟数据，实际部署时需替换为真实系统调用。
+ */
+
 #include "systemservice.h"
 #include <QDateTime>
 #include <QRandomGenerator>
 
 Result SystemService::getSystemInfo()
 {
-    // Mock data - replace with actual system calls
+    // 模拟数据 - 实际部署时替换为真实系统调用
     QVariantMap info;
     info["cpu"] = QRandomGenerator::global()->bounded(20, 60);
     info["mem"] = QRandomGenerator::global()->bounded(30, 70);
-    info["uptime"] = "3d 12h 45m";
+    info["uptime"] = "3天 12小时 45分钟";
     info["version"] = "1.0.0";
 
     return Result::success(info);
@@ -16,7 +24,7 @@ Result SystemService::getSystemInfo()
 
 Result SystemService::getCommStatus()
 {
-    // Mock data - replace with actual status
+    // 模拟数据 - 实际部署时替换为真实状态
     QVariantMap status;
     status["network"] = true;
     status["rs485"] = true;
@@ -28,7 +36,7 @@ Result SystemService::getCommStatus()
 
 Result SystemService::getSerialConfig()
 {
-    // Mock data - replace with actual config
+    // 模拟数据 - 实际部署时替换为真实配置
     QVariantMap config;
     config["port"] = "COM1";
     config["baudRate"] = 9600;
@@ -42,43 +50,43 @@ Result SystemService::getSerialConfig()
 Result SystemService::setSerialConfig(const SerialConfig &cfg)
 {
     Q_UNUSED(cfg)
-    // TODO: Implement actual serial config save
+    // TODO: 实现实际的串口配置保存
     return Result::success();
 }
 
 Result SystemService::restartCommService()
 {
-    // TODO: Implement actual service restart
+    // TODO: 实现实际的服务重启
     return Result::success();
 }
 
 Result SystemService::getSystemLog()
 {
-    // Mock log data
+    // 模拟日志数据
     QStringList logs;
-    logs << "[2024-01-15 10:00:00] System started";
-    logs << "[2024-01-15 10:00:01] Loading configuration...";
-    logs << "[2024-01-15 10:00:02] Serial port COM1 opened";
-    logs << "[2024-01-15 10:00:03] Modbus service started";
-    logs << "[2024-01-15 10:01:00] Device scan completed, 3 devices found";
-    logs << "[2024-01-15 10:05:00] Network connected: 192.168.1.100";
-    logs << "[2024-01-15 10:10:00] MQTT broker connected";
+    logs << "[2024-01-15 10:00:00] 系统启动";
+    logs << "[2024-01-15 10:00:01] 正在加载配置...";
+    logs << "[2024-01-15 10:00:02] 串口 COM1 已打开";
+    logs << "[2024-01-15 10:00:03] Modbus服务已启动";
+    logs << "[2024-01-15 10:01:00] 设备扫描完成，发现3个设备";
+    logs << "[2024-01-15 10:05:00] 网络已连接：192.168.1.100";
+    logs << "[2024-01-15 10:10:00] MQTT服务器已连接";
 
     return Result::success(logs);
 }
 
 Result SystemService::getCommLog()
 {
-    // Mock communication log data
+    // 模拟通信日志数据
     QStringList logs;
-    logs << "[10:00:05] TX: 01 03 00 00 00 0A C5 CD";
-    logs << "[10:00:05] RX: 01 03 14 00 64 00 65 00 66...";
-    logs << "[10:00:06] Device 01: Read success, 20 bytes";
-    logs << "[10:00:10] TX: 02 03 00 00 00 05 85 F8";
-    logs << "[10:00:10] RX: 02 03 0A 01 F4 01 F5 01 F6...";
-    logs << "[10:00:11] Device 02: Read success, 10 bytes";
-    logs << "[10:00:15] TX: 03 03 00 00 00 08 45 E9";
-    logs << "[10:00:18] Device 03: Timeout, no response";
+    logs << "[10:00:05] 发送: 01 03 00 00 00 0A C5 CD";
+    logs << "[10:00:05] 接收: 01 03 14 00 64 00 65 00 66...";
+    logs << "[10:00:06] 设备01: 读取成功，20字节";
+    logs << "[10:00:10] 发送: 02 03 00 00 00 05 85 F8";
+    logs << "[10:00:10] 接收: 02 03 0A 01 F4 01 F5 01 F6...";
+    logs << "[10:00:11] 设备02: 读取成功，10字节";
+    logs << "[10:00:15] 发送: 03 03 00 00 00 08 45 E9";
+    logs << "[10:00:18] 设备03: 超时，无响应";
 
     return Result::success(logs);
 }
@@ -86,6 +94,6 @@ Result SystemService::getCommLog()
 Result SystemService::exportLog(const QString &type)
 {
     Q_UNUSED(type)
-    // TODO: Implement log export
+    // TODO: 实现日志导出功能
     return Result::success(QString("/tmp/log_export.txt"));
 }

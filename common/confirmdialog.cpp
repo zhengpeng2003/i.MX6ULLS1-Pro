@@ -1,3 +1,10 @@
+/**
+ * @file confirmdialog.cpp
+ * @brief 确认对话框组件实现
+ *
+ * 本文件实现了确认对话框的所有功能，包括界面布局、按钮事件等。
+ */
+
 #include "confirmdialog.h"
 #include "appstyle.h"
 #include <QVBoxLayout>
@@ -36,7 +43,7 @@ void ConfirmDialog::setupUI()
     mainLayout->setContentsMargins(20, 15, 20, 15);
     mainLayout->setSpacing(12);
 
-    // Title
+    // 标题
     m_titleLabel->setStyleSheet(
         "QLabel {"
         "   color: #ffffff;"
@@ -46,10 +53,10 @@ void ConfirmDialog::setupUI()
         "}"
     );
     m_titleLabel->setAlignment(Qt::AlignCenter);
-    m_titleLabel->setText("Confirm");
+    m_titleLabel->setText("确认");
     mainLayout->addWidget(m_titleLabel);
 
-    // Message
+    // 消息内容
     m_messageLabel->setStyleSheet(
         "QLabel {"
         "   color: #a0a0a0;"
@@ -63,17 +70,17 @@ void ConfirmDialog::setupUI()
 
     mainLayout->addStretch();
 
-    // Buttons
+    // 按钮区域
     QHBoxLayout *btnLayout = new QHBoxLayout();
     btnLayout->setSpacing(15);
 
-    m_cancelBtn->setText("Cancel");
+    m_cancelBtn->setText("取消");
     m_cancelBtn->setMinimumHeight(44);
     m_cancelBtn->setStyleSheet(AppStyle::getButtonStyle(false));
     connect(m_cancelBtn, &QPushButton::clicked, this, &QDialog::reject);
     btnLayout->addWidget(m_cancelBtn);
 
-    m_confirmBtn->setText("Confirm");
+    m_confirmBtn->setText("确认");
     m_confirmBtn->setMinimumHeight(44);
     m_confirmBtn->setStyleSheet(AppStyle::getButtonStyle(true));
     connect(m_confirmBtn, &QPushButton::clicked, this, &QDialog::accept);
@@ -108,7 +115,7 @@ bool ConfirmDialog::confirm(QWidget *parent, const QString &title, const QString
     dialog.setTitle(title);
     dialog.setMessage(message);
 
-    // Center on parent
+    // 居中显示在父窗口上
     if (parent) {
         QPoint center = parent->mapToGlobal(parent->rect().center());
         dialog.move(center.x() - dialog.width() / 2, center.y() - dialog.height() / 2);
@@ -119,5 +126,5 @@ bool ConfirmDialog::confirm(QWidget *parent, const QString &title, const QString
 
 bool ConfirmDialog::confirm(QWidget *parent, const QString &message)
 {
-    return confirm(parent, "Confirm", message);
+    return confirm(parent, "确认", message);
 }

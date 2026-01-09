@@ -1,7 +1,15 @@
+/**
+ * @file mainwindow.cpp
+ * @brief 主窗口实现
+ *
+ * 本文件实现了主窗口的所有功能，包括界面初始化、页面创建、
+ * 信号连接和页面导航逻辑。
+ */
+
 #include "mainwindow.h"
 #include "common/appstyle.h"
 
-// Include all page headers
+// 包含所有页面头文件
 #include "home/homepage.h"
 #include "device/devicelistpage.h"
 #include "device/deviceconfigpage.h"
@@ -35,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     createPages();
     connectSignals();
 
-    // Start at home page
+    // 启动时显示首页
     navigateTo(PAGE_HOME);
 }
 
@@ -45,63 +53,63 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupUI()
 {
-    // Set fixed size for 480x272 screen
+    // 设置固定尺寸以适配480x272屏幕
     setFixedSize(AppStyle::SCREEN_WIDTH, AppStyle::SCREEN_HEIGHT);
 
-    // Remove window frame for embedded display
+    // 移除窗口边框以适配嵌入式显示
     setWindowFlags(Qt::FramelessWindowHint);
 
-    // Set window title
-    setWindowTitle("Industrial Monitor System");
+    // 设置窗口标题
+    setWindowTitle("工业监控系统");
 
-    // Create stacked widget
+    // 创建页面堆栈容器
     m_stackWidget = new QStackedWidget(this);
     setCentralWidget(m_stackWidget);
 }
 
 void MainWindow::createPages()
 {
-    // Create all pages and add to stack
+    // 创建所有页面并添加到堆栈
     m_homePage = new HomePage(this);
-    m_stackWidget->addWidget(m_homePage);  // index 0
+    m_stackWidget->addWidget(m_homePage);  // 索引 0
 
     m_deviceListPage = new DeviceListPage(this);
-    m_stackWidget->addWidget(m_deviceListPage);  // index 1
+    m_stackWidget->addWidget(m_deviceListPage);  // 索引 1
 
     m_deviceConfigPage = new DeviceConfigPage(this);
-    m_stackWidget->addWidget(m_deviceConfigPage);  // index 2
+    m_stackWidget->addWidget(m_deviceConfigPage);  // 索引 2
 
     m_monitorPage = new MonitorPage(this);
-    m_stackWidget->addWidget(m_monitorPage);  // index 3
+    m_stackWidget->addWidget(m_monitorPage);  // 索引 3
 
     m_dataDetailPage = new DataDetailPage(this);
-    m_stackWidget->addWidget(m_dataDetailPage);  // index 4
+    m_stackWidget->addWidget(m_dataDetailPage);  // 索引 4
 
     m_alarmCenterPage = new AlarmCenterPage(this);
-    m_stackWidget->addWidget(m_alarmCenterPage);  // index 5
+    m_stackWidget->addWidget(m_alarmCenterPage);  // 索引 5
 
     m_alarmRulePage = new AlarmRulePage(this);
-    m_stackWidget->addWidget(m_alarmRulePage);  // index 6
+    m_stackWidget->addWidget(m_alarmRulePage);  // 索引 6
 
     m_settingsPage = new SettingsPage(this);
-    m_stackWidget->addWidget(m_settingsPage);  // index 7
+    m_stackWidget->addWidget(m_settingsPage);  // 索引 7
 
     m_networkPage = new NetworkPage(this);
-    m_stackWidget->addWidget(m_networkPage);  // index 8
+    m_stackWidget->addWidget(m_networkPage);  // 索引 8
 
     m_mqttConfigPage = new MqttConfigPage(this);
-    m_stackWidget->addWidget(m_mqttConfigPage);  // index 9
+    m_stackWidget->addWidget(m_mqttConfigPage);  // 索引 9
 
     m_logPage = new LogPage(this);
-    m_stackWidget->addWidget(m_logPage);  // index 10
+    m_stackWidget->addWidget(m_logPage);  // 索引 10
 
     m_helpPage = new HelpPage(this);
-    m_stackWidget->addWidget(m_helpPage);  // index 11
+    m_stackWidget->addWidget(m_helpPage);  // 索引 11
 }
 
 void MainWindow::connectSignals()
 {
-    // Home page navigation
+    // 首页导航信号
     connect(m_homePage, &HomePage::navigateToDevices, this, [this]() {
         navigateTo(PAGE_DEVICE_LIST);
     });
@@ -115,20 +123,20 @@ void MainWindow::connectSignals()
         navigateTo(PAGE_SETTINGS);
     });
 
-    // Device list page
+    // 设备列表页信号
     connect(m_deviceListPage, &DeviceListPage::goBack, this, &MainWindow::goBack);
     connect(m_deviceListPage, &DeviceListPage::editDevice, this, [this](int deviceId) {
         navigateTo(PAGE_DEVICE_CONFIG, deviceId);
     });
     connect(m_deviceListPage, &DeviceListPage::addDevice, this, [this]() {
-        navigateTo(PAGE_DEVICE_CONFIG, -1);  // -1 means new device
+        navigateTo(PAGE_DEVICE_CONFIG, -1);  // -1 表示新增设备
     });
 
-    // Device config page
+    // 设备配置页信号
     connect(m_deviceConfigPage, &DeviceConfigPage::goBack, this, &MainWindow::goBack);
     connect(m_deviceConfigPage, &DeviceConfigPage::saved, this, &MainWindow::goBack);
 
-    // Monitor page
+    // 监控页信号
     connect(m_monitorPage, &MonitorPage::goBack, this, &MainWindow::goBack);
     connect(m_monitorPage, &MonitorPage::viewDetail, this, [this](int deviceId, int addr) {
         QVariantMap param;
@@ -137,19 +145,19 @@ void MainWindow::connectSignals()
         navigateTo(PAGE_DATA_DETAIL, param);
     });
 
-    // Data detail page
+    // 数据详情页信号
     connect(m_dataDetailPage, &DataDetailPage::goBack, this, &MainWindow::goBack);
 
-    // Alarm center page
+    // 告警中心页信号
     connect(m_alarmCenterPage, &AlarmCenterPage::goBack, this, &MainWindow::goBack);
     connect(m_alarmCenterPage, &AlarmCenterPage::configureRules, this, [this]() {
         navigateTo(PAGE_ALARM_RULE);
     });
 
-    // Alarm rule page
+    // 告警规则页信号
     connect(m_alarmRulePage, &AlarmRulePage::goBack, this, &MainWindow::goBack);
 
-    // Settings page
+    // 设置页信号
     connect(m_settingsPage, &SettingsPage::goBack, this, &MainWindow::goBack);
     connect(m_settingsPage, &SettingsPage::navigateToNetwork, this, [this]() {
         navigateTo(PAGE_NETWORK);
@@ -164,16 +172,16 @@ void MainWindow::connectSignals()
         navigateTo(PAGE_HELP);
     });
 
-    // Network page
+    // 网络设置页信号
     connect(m_networkPage, &NetworkPage::goBack, this, &MainWindow::goBack);
 
-    // MQTT config page
+    // MQTT配置页信号
     connect(m_mqttConfigPage, &MqttConfigPage::goBack, this, &MainWindow::goBack);
 
-    // Log page
+    // 日志页信号
     connect(m_logPage, &LogPage::goBack, this, &MainWindow::goBack);
 
-    // Help page
+    // 帮助页信号
     connect(m_helpPage, &HelpPage::goBack, this, &MainWindow::goBack);
 }
 
@@ -188,16 +196,16 @@ void MainWindow::navigateTo(PageIndex page, const QVariant &param)
         return;
     }
 
-    // Save current page to history
+    // 保存当前页面到历史记录
     PageIndex current = currentPage();
     if (current != page) {
         m_pageHistory.push(current);
     }
 
-    // Switch page
+    // 切换页面
     m_stackWidget->setCurrentIndex(page);
 
-    // Notify page of parameter if applicable
+    // 根据页面类型传递参数
     switch (page) {
     case PAGE_DEVICE_CONFIG:
         m_deviceConfigPage->loadDevice(param.toInt());

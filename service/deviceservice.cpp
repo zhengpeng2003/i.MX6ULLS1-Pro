@@ -1,22 +1,33 @@
+/**
+ * @file deviceservice.cpp
+ * @brief 设备服务实现
+ *
+ * 本文件实现了设备管理服务的所有功能，包括设备的增删改查、
+ * 扫描设备、配置校验等。当前为模拟数据，实际部署时需替换为真实数据存储。
+ */
+
 #include "deviceservice.h"
 
-// Static mock device list
+// 静态模拟设备列表
 static QVariantList s_deviceList;
 static int s_nextDeviceId = 1;
 static bool s_initialized = false;
 
+/**
+ * @brief 初始化模拟数据
+ */
 static void initMockData()
 {
     if (s_initialized) return;
     s_initialized = true;
 
-    // Add some mock devices
+    // 添加模拟设备
     QVariantMap dev1;
     dev1["id"] = s_nextDeviceId++;
     dev1["modbusAddress"] = 1;
-    dev1["name"] = "Temperature Sensor";
-    dev1["type"] = "Sensor";
-    dev1["status"] = "Online";
+    dev1["name"] = "温度传感器";
+    dev1["type"] = "传感器";
+    dev1["status"] = "在线";
     dev1["online"] = true;
     dev1["functionCode"] = 3;
     dev1["startAddress"] = 0;
@@ -27,9 +38,9 @@ static void initMockData()
     QVariantMap dev2;
     dev2["id"] = s_nextDeviceId++;
     dev2["modbusAddress"] = 2;
-    dev2["name"] = "Pressure Gauge";
-    dev2["type"] = "Sensor";
-    dev2["status"] = "Online";
+    dev2["name"] = "压力表";
+    dev2["type"] = "传感器";
+    dev2["status"] = "在线";
     dev2["online"] = true;
     dev2["functionCode"] = 3;
     dev2["startAddress"] = 0;
@@ -40,9 +51,9 @@ static void initMockData()
     QVariantMap dev3;
     dev3["id"] = s_nextDeviceId++;
     dev3["modbusAddress"] = 3;
-    dev3["name"] = "Flow Meter";
-    dev3["type"] = "Meter";
-    dev3["status"] = "Offline";
+    dev3["name"] = "流量计";
+    dev3["type"] = "仪表";
+    dev3["status"] = "离线";
     dev3["online"] = false;
     dev3["functionCode"] = 4;
     dev3["startAddress"] = 100;
@@ -66,7 +77,7 @@ Result DeviceService::addDevice(const DeviceConfig &cfg)
     dev["modbusAddress"] = cfg.modbusAddress;
     dev["name"] = cfg.name;
     dev["type"] = cfg.type;
-    dev["status"] = "Unknown";
+    dev["status"] = "未知";
     dev["online"] = false;
     dev["functionCode"] = cfg.functionCode;
     dev["startAddress"] = cfg.startAddress;
@@ -97,7 +108,7 @@ Result DeviceService::updateDevice(int id, const DeviceConfig &cfg)
             return Result::success();
         }
     }
-    return Result::error(404, "Device not found");
+    return Result::error(404, "设备不存在");
 }
 
 Result DeviceService::removeDevice(int id)
@@ -110,12 +121,12 @@ Result DeviceService::removeDevice(int id)
             return Result::success();
         }
     }
-    return Result::error(404, "Device not found");
+    return Result::error(404, "设备不存在");
 }
 
 Result DeviceService::scanModbusDevices()
 {
-    // Mock scan - returns list of found addresses
+    // 模拟扫描 - 返回发现的设备地址列表
     QVariantList found;
     found << 1 << 2 << 5 << 10;
     return Result::success(found);
@@ -131,7 +142,7 @@ Result DeviceService::loadDeviceConfig(int id)
             return Result::success(dev);
         }
     }
-    return Result::error(404, "Device not found");
+    return Result::error(404, "设备不存在");
 }
 
 Result DeviceService::saveDeviceConfig(int id, const DeviceConfig &cfg)
@@ -145,19 +156,19 @@ Result DeviceService::saveDeviceConfig(int id, const DeviceConfig &cfg)
 Result DeviceService::validateConfig(const DeviceConfig &cfg)
 {
     if (cfg.modbusAddress < 1 || cfg.modbusAddress > 247) {
-        return Result::error(1, "Modbus address must be 1-247");
+        return Result::error(1, "Modbus地址必须在1-247之间");
     }
     if (cfg.functionCode < 1 || cfg.functionCode > 6) {
-        return Result::error(2, "Invalid function code");
+        return Result::error(2, "无效的功能码");
     }
     if (cfg.startAddress < 0 || cfg.startAddress > 65535) {
-        return Result::error(3, "Invalid start address");
+        return Result::error(3, "无效的起始地址");
     }
     if (cfg.registerCount < 1 || cfg.registerCount > 125) {
-        return Result::error(4, "Register count must be 1-125");
+        return Result::error(4, "寄存器数量必须在1-125之间");
     }
     if (cfg.pollInterval < 100 || cfg.pollInterval > 60000) {
-        return Result::error(5, "Poll interval must be 100-60000ms");
+        return Result::error(5, "轮询间隔必须在100-60000毫秒之间");
     }
     return Result::success();
 }

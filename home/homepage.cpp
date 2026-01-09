@@ -1,3 +1,11 @@
+/**
+ * @file homepage.cpp
+ * @brief 系统首页实现
+ *
+ * 本文件实现了系统首页的所有功能，包括状态栏、状态卡片、导航按钮的
+ * 创建和数据刷新。
+ */
+
 #include "homepage.h"
 #include "../common/appstyle.h"
 #include "../service/systemservice.h"
@@ -32,14 +40,14 @@ HomePage::HomePage(QWidget *parent)
 {
     setupUI();
 
-    // Setup timers
+    // 设置定时器
     connect(m_timeTimer, &QTimer::timeout, this, &HomePage::updateTime);
     m_timeTimer->start(1000);
 
     connect(m_refreshTimer, &QTimer::timeout, this, &HomePage::onRefreshTimer);
     m_refreshTimer->start(5000);
 
-    // Initial update
+    // 初始更新
     updateTime();
     updateStatusCards();
 }
@@ -99,48 +107,48 @@ void HomePage::setupStatusBar()
     layout->setContentsMargins(10, 0, 10, 0);
     layout->setSpacing(15);
 
-    // Time label
+    // 时间标签
     m_timeLabel = new QLabel(m_statusBar);
     m_timeLabel->setStyleSheet("font-size: 11pt; font-weight: bold;");
     layout->addWidget(m_timeLabel);
 
     layout->addStretch();
 
-    // Network status icon
+    // 网络状态图标
     m_networkIcon = new QLabel(m_statusBar);
-    m_networkIcon->setText("NET");
+    m_networkIcon->setText("网络");
     m_networkIcon->setStyleSheet("color: #00ff88; font-size: 9pt;");
     layout->addWidget(m_networkIcon);
 
-    // RS485 status icon
+    // RS485状态图标
     m_rs485Icon = new QLabel(m_statusBar);
     m_rs485Icon->setText("RS485");
     m_rs485Icon->setStyleSheet("color: #00ff88; font-size: 9pt;");
     layout->addWidget(m_rs485Icon);
 
-    // CPU usage
+    // CPU使用率
     m_cpuLabel = new QLabel(m_statusBar);
     m_cpuLabel->setText("CPU: --");
     m_cpuLabel->setStyleSheet("font-size: 9pt;");
     layout->addWidget(m_cpuLabel);
 
-    // Memory usage
+    // 内存使用率
     m_memLabel = new QLabel(m_statusBar);
-    m_memLabel->setText("MEM: --");
+    m_memLabel->setText("内存: --");
     m_memLabel->setStyleSheet("font-size: 9pt;");
     layout->addWidget(m_memLabel);
 }
 
 void HomePage::setupStatusCards()
 {
-    // Device count card
+    // 在线设备卡片
     m_deviceCard = new QFrame(this);
     m_deviceCard->setStyleSheet(AppStyle::getCardStyle());
     QVBoxLayout *deviceLayout = new QVBoxLayout(m_deviceCard);
     deviceLayout->setContentsMargins(8, 8, 8, 8);
     deviceLayout->setAlignment(Qt::AlignCenter);
 
-    QLabel *deviceTitle = new QLabel("Online Devices", m_deviceCard);
+    QLabel *deviceTitle = new QLabel("在线设备", m_deviceCard);
     deviceTitle->setStyleSheet("color: #a0a0a0; font-size: 10pt; background: transparent;");
     deviceTitle->setAlignment(Qt::AlignCenter);
     deviceLayout->addWidget(deviceTitle);
@@ -150,14 +158,14 @@ void HomePage::setupStatusCards()
     m_deviceCountLabel->setAlignment(Qt::AlignCenter);
     deviceLayout->addWidget(m_deviceCountLabel);
 
-    // Alarm count card
+    // 告警数量卡片
     m_alarmCard = new QFrame(this);
     m_alarmCard->setStyleSheet(AppStyle::getCardStyle());
     QVBoxLayout *alarmLayout = new QVBoxLayout(m_alarmCard);
     alarmLayout->setContentsMargins(8, 8, 8, 8);
     alarmLayout->setAlignment(Qt::AlignCenter);
 
-    QLabel *alarmTitle = new QLabel("Active Alarms", m_alarmCard);
+    QLabel *alarmTitle = new QLabel("活动告警", m_alarmCard);
     alarmTitle->setStyleSheet("color: #a0a0a0; font-size: 10pt; background: transparent;");
     alarmTitle->setAlignment(Qt::AlignCenter);
     alarmLayout->addWidget(alarmTitle);
@@ -167,14 +175,14 @@ void HomePage::setupStatusCards()
     m_alarmCountLabel->setAlignment(Qt::AlignCenter);
     alarmLayout->addWidget(m_alarmCountLabel);
 
-    // Communication rate card
+    // 通信正常率卡片
     m_commCard = new QFrame(this);
     m_commCard->setStyleSheet(AppStyle::getCardStyle());
     QVBoxLayout *commLayout = new QVBoxLayout(m_commCard);
     commLayout->setContentsMargins(8, 8, 8, 8);
     commLayout->setAlignment(Qt::AlignCenter);
 
-    QLabel *commTitle = new QLabel("Comm Rate", m_commCard);
+    QLabel *commTitle = new QLabel("通信正常率", m_commCard);
     commTitle->setStyleSheet("color: #a0a0a0; font-size: 10pt; background: transparent;");
     commTitle->setAlignment(Qt::AlignCenter);
     commLayout->addWidget(commTitle);
@@ -204,22 +212,22 @@ void HomePage::setupNavigationButtons()
         "   border-color: #e94560;"
         "}";
 
-    m_deviceBtn = new QPushButton("Device\nManagement", this);
+    m_deviceBtn = new QPushButton("设备\n管理", this);
     m_deviceBtn->setStyleSheet(btnStyle);
     m_deviceBtn->setMinimumSize(100, 70);
     connect(m_deviceBtn, &QPushButton::clicked, this, &HomePage::navigateToDevices);
 
-    m_monitorBtn = new QPushButton("Real-time\nMonitor", this);
+    m_monitorBtn = new QPushButton("实时\n监控", this);
     m_monitorBtn->setStyleSheet(btnStyle);
     m_monitorBtn->setMinimumSize(100, 70);
     connect(m_monitorBtn, &QPushButton::clicked, this, &HomePage::navigateToMonitor);
 
-    m_alarmBtn = new QPushButton("Alarm\nCenter", this);
+    m_alarmBtn = new QPushButton("告警\n中心", this);
     m_alarmBtn->setStyleSheet(btnStyle);
     m_alarmBtn->setMinimumSize(100, 70);
     connect(m_alarmBtn, &QPushButton::clicked, this, &HomePage::navigateToAlarms);
 
-    m_settingsBtn = new QPushButton("System\nSettings", this);
+    m_settingsBtn = new QPushButton("系统\n设置", this);
     m_settingsBtn->setStyleSheet(btnStyle);
     m_settingsBtn->setMinimumSize(100, 70);
     connect(m_settingsBtn, &QPushButton::clicked, this, &HomePage::navigateToSettings);
@@ -243,28 +251,28 @@ void HomePage::refreshStatus()
 
 void HomePage::updateStatusCards()
 {
-    // Get system info
+    // 获取系统信息
     Result sysResult = SystemService::getSystemInfo();
     if (sysResult.isSuccess()) {
         QVariantMap info = sysResult.data.toMap();
         m_cpuLabel->setText(QString("CPU: %1%").arg(info["cpu"].toInt()));
-        m_memLabel->setText(QString("MEM: %1%").arg(info["mem"].toInt()));
+        m_memLabel->setText(QString("内存: %1%").arg(info["mem"].toInt()));
     }
 
-    // Get communication status
+    // 获取通信状态
     Result commResult = SystemService::getCommStatus();
     if (commResult.isSuccess()) {
         QVariantMap status = commResult.data.toMap();
 
-        // Update network status
+        // 更新网络状态
         bool netOk = status["network"].toBool();
         m_networkIcon->setStyleSheet(netOk ? "color: #00ff88; font-size: 9pt;" : "color: #ff4444; font-size: 9pt;");
 
-        // Update RS485 status
+        // 更新RS485状态
         bool rs485Ok = status["rs485"].toBool();
         m_rs485Icon->setStyleSheet(rs485Ok ? "color: #00ff88; font-size: 9pt;" : "color: #ff4444; font-size: 9pt;");
 
-        // Update comm rate
+        // 更新通信正常率
         int commRate = status["commRate"].toInt();
         m_commRateLabel->setText(QString("%1%").arg(commRate));
         if (commRate >= 90) {
@@ -276,7 +284,7 @@ void HomePage::updateStatusCards()
         }
     }
 
-    // Get device count
+    // 获取设备数量
     Result deviceResult = DeviceService::getDeviceList();
     if (deviceResult.isSuccess()) {
         QVariantList devices = deviceResult.data.toList();
@@ -289,7 +297,7 @@ void HomePage::updateStatusCards()
         m_deviceCountLabel->setText(QString::number(onlineCount));
     }
 
-    // Get alarm count
+    // 获取告警数量
     Result alarmResult = AlarmService::getAlarmList();
     if (alarmResult.isSuccess()) {
         QVariantList alarms = alarmResult.data.toList();

@@ -1,3 +1,11 @@
+/**
+ * @file datadetailpage.cpp
+ * @brief 数据详情页面实现
+ *
+ * 本文件实现了数据详情页面的所有功能，包括当前值显示、
+ * 统计信息显示、趋势图占位等。
+ */
+
 #include "datadetailpage.h"
 #include "../common/appstyle.h"
 #include "../service/modbusservice.h"
@@ -65,7 +73,7 @@ void DataDetailPage::setupTitleBar()
     connect(m_backBtn, &QPushButton::clicked, this, &DataDetailPage::goBack);
     layout->addWidget(m_backBtn);
 
-    m_titleLabel = new QLabel("Data Detail", m_titleBar);
+    m_titleLabel = new QLabel("数据详情", m_titleBar);
     m_titleLabel->setStyleSheet("color: #ffffff; font-size: 16pt; font-weight: bold;");
     layout->addWidget(m_titleLabel);
 
@@ -79,13 +87,13 @@ void DataDetailPage::setupContent()
     contentLayout->setContentsMargins(10, 8, 10, 8);
     contentLayout->setSpacing(8);
 
-    // Current value card
+    // 当前值卡片
     m_valueCard = new QFrame(content);
     m_valueCard->setStyleSheet(AppStyle::getCardStyle());
     QVBoxLayout *valueLayout = new QVBoxLayout(m_valueCard);
     valueLayout->setAlignment(Qt::AlignCenter);
 
-    QLabel *valueTitle = new QLabel("Current Value", m_valueCard);
+    QLabel *valueTitle = new QLabel("当前值", m_valueCard);
     valueTitle->setStyleSheet("color: #a0a0a0; font-size: 10pt; background: transparent;");
     valueTitle->setAlignment(Qt::AlignCenter);
     valueLayout->addWidget(valueTitle);
@@ -103,23 +111,23 @@ void DataDetailPage::setupContent()
 
     valueLayout->addLayout(valueRow);
 
-    m_updateTimeLabel = new QLabel("Last update: --", m_valueCard);
+    m_updateTimeLabel = new QLabel("最后更新: --", m_valueCard);
     m_updateTimeLabel->setStyleSheet("color: #606060; font-size: 9pt; background: transparent;");
     m_updateTimeLabel->setAlignment(Qt::AlignCenter);
     valueLayout->addWidget(m_updateTimeLabel);
 
     contentLayout->addWidget(m_valueCard);
 
-    // Statistics card
+    // 统计卡片
     m_statsCard = new QFrame(content);
     m_statsCard->setStyleSheet(AppStyle::getCardStyle());
     QHBoxLayout *statsLayout = new QHBoxLayout(m_statsCard);
     statsLayout->setSpacing(20);
 
-    // Min value
+    // 最小值
     QVBoxLayout *minLayout = new QVBoxLayout();
     minLayout->setAlignment(Qt::AlignCenter);
-    QLabel *minTitle = new QLabel("Min", m_statsCard);
+    QLabel *minTitle = new QLabel("最小值", m_statsCard);
     minTitle->setStyleSheet("color: #a0a0a0; font-size: 10pt; background: transparent;");
     minTitle->setAlignment(Qt::AlignCenter);
     minLayout->addWidget(minTitle);
@@ -129,10 +137,10 @@ void DataDetailPage::setupContent()
     minLayout->addWidget(m_minValueLabel);
     statsLayout->addLayout(minLayout);
 
-    // Max value
+    // 最大值
     QVBoxLayout *maxLayout = new QVBoxLayout();
     maxLayout->setAlignment(Qt::AlignCenter);
-    QLabel *maxTitle = new QLabel("Max", m_statsCard);
+    QLabel *maxTitle = new QLabel("最大值", m_statsCard);
     maxTitle->setStyleSheet("color: #a0a0a0; font-size: 10pt; background: transparent;");
     maxTitle->setAlignment(Qt::AlignCenter);
     maxLayout->addWidget(maxTitle);
@@ -142,10 +150,10 @@ void DataDetailPage::setupContent()
     maxLayout->addWidget(m_maxValueLabel);
     statsLayout->addLayout(maxLayout);
 
-    // Avg value
+    // 平均值
     QVBoxLayout *avgLayout = new QVBoxLayout();
     avgLayout->setAlignment(Qt::AlignCenter);
-    QLabel *avgTitle = new QLabel("Avg", m_statsCard);
+    QLabel *avgTitle = new QLabel("平均值", m_statsCard);
     avgTitle->setStyleSheet("color: #a0a0a0; font-size: 10pt; background: transparent;");
     avgTitle->setAlignment(Qt::AlignCenter);
     avgLayout->addWidget(avgTitle);
@@ -157,7 +165,7 @@ void DataDetailPage::setupContent()
 
     contentLayout->addWidget(m_statsCard);
 
-    // Chart placeholder
+    // 趋势图占位
     m_chartPlaceholder = new QFrame(content);
     m_chartPlaceholder->setStyleSheet(
         "QFrame { background-color: #16213e; border: 2px dashed #0f3460; border-radius: 8px; }"
@@ -165,7 +173,7 @@ void DataDetailPage::setupContent()
     QVBoxLayout *chartLayout = new QVBoxLayout(m_chartPlaceholder);
     chartLayout->setAlignment(Qt::AlignCenter);
 
-    m_chartLabel = new QLabel("Trend Chart\n(QChart placeholder)", m_chartPlaceholder);
+    m_chartLabel = new QLabel("趋势图\n（QChart占位）", m_chartPlaceholder);
     m_chartLabel->setStyleSheet("color: #606060; font-size: 12pt; background: transparent;");
     m_chartLabel->setAlignment(Qt::AlignCenter);
     chartLayout->addWidget(m_chartLabel);
@@ -180,7 +188,7 @@ void DataDetailPage::loadData(int deviceId, int addr)
     m_deviceId = deviceId;
     m_registerAddr = addr;
 
-    m_titleLabel->setText(QString("Register %1").arg(addr));
+    m_titleLabel->setText(QString("寄存器 %1").arg(addr));
 
     updateData();
     m_refreshTimer->start(2000);
@@ -203,8 +211,8 @@ void DataDetailPage::updateData()
     QVariantMap data = result.data.toMap();
 
     m_currentValueLabel->setText(QString::number(data["currentValue"].toDouble(), 'f', 1));
-    m_unitLabel->setText("C");
-    m_updateTimeLabel->setText(QString("Last update: %1").arg(data["updateTime"].toString()));
+    m_unitLabel->setText("℃");
+    m_updateTimeLabel->setText(QString("最后更新: %1").arg(data["updateTime"].toString()));
 
     m_minValueLabel->setText(QString::number(data["minValue"].toDouble(), 'f', 1));
     m_maxValueLabel->setText(QString::number(data["maxValue"].toDouble(), 'f', 1));

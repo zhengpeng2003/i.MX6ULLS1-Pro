@@ -1,9 +1,17 @@
+/**
+ * @file modbusservice.cpp
+ * @brief Modbus通信服务实现
+ *
+ * 本文件实现了Modbus通信服务的所有功能，包括轮询控制、
+ * 寄存器读取等。当前为模拟数据，实际部署时需替换为真实Modbus通信。
+ */
+
 #include "modbusservice.h"
 #include <QRandomGenerator>
 #include <QDateTime>
 #include <QSet>
 
-// Static set of polling devices
+// 正在轮询的设备ID集合
 static QSet<int> s_pollingDevices;
 
 Result ModbusService::startPolling(int deviceId)
@@ -27,14 +35,14 @@ Result ModbusService::readHoldingRegisters(int deviceId)
 {
     Q_UNUSED(deviceId)
 
-    // Mock register data
+    // 模拟寄存器数据
     QVariantList registers;
     for (int i = 0; i < 10; ++i) {
         QVariantMap reg;
         reg["address"] = i;
-        reg["name"] = QString("Register %1").arg(i);
+        reg["name"] = QString("寄存器 %1").arg(i);
         reg["value"] = QRandomGenerator::global()->bounded(0, 10000);
-        reg["unit"] = (i % 2 == 0) ? "C" : "bar";
+        reg["unit"] = (i % 2 == 0) ? "℃" : "bar";
         reg["updateTime"] = QDateTime::currentDateTime().toString("hh:mm:ss");
         registers.append(reg);
     }
@@ -46,12 +54,12 @@ Result ModbusService::readInputRegisters(int deviceId)
 {
     Q_UNUSED(deviceId)
 
-    // Mock input register data
+    // 模拟输入寄存器数据
     QVariantList registers;
     for (int i = 0; i < 5; ++i) {
         QVariantMap reg;
         reg["address"] = 100 + i;
-        reg["name"] = QString("Input %1").arg(i);
+        reg["name"] = QString("输入 %1").arg(i);
         reg["value"] = QRandomGenerator::global()->bounded(0, 5000);
         reg["unit"] = "mA";
         reg["updateTime"] = QDateTime::currentDateTime().toString("hh:mm:ss");
@@ -66,12 +74,12 @@ Result ModbusService::getRealtimeValue(int deviceId, int addr)
     Q_UNUSED(deviceId)
     Q_UNUSED(addr)
 
-    // Mock real-time value
+    // 模拟实时值
     QVariantMap data;
     data["value"] = QRandomGenerator::global()->bounded(0, 10000) / 100.0;
-    data["unit"] = "C";
+    data["unit"] = "℃";
     data["updateTime"] = QDateTime::currentDateTime().toString("hh:mm:ss");
-    data["quality"] = "Good";
+    data["quality"] = "良好";
 
     return Result::success(data);
 }
@@ -81,7 +89,7 @@ Result ModbusService::getHistoryData(int deviceId, int addr)
     Q_UNUSED(deviceId)
     Q_UNUSED(addr)
 
-    // Mock historical data
+    // 模拟历史数据
     QVariantMap data;
     data["currentValue"] = QRandomGenerator::global()->bounded(200, 300) / 10.0;
     data["minValue"] = 18.5;
@@ -89,7 +97,7 @@ Result ModbusService::getHistoryData(int deviceId, int addr)
     data["avgValue"] = 24.3;
     data["updateTime"] = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
 
-    // History points for chart
+    // 用于图表的历史数据点
     QVariantList history;
     double base = 25.0;
     for (int i = 0; i < 60; ++i) {
